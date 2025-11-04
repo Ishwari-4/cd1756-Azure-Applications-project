@@ -30,9 +30,13 @@ jobs:
         run: |
           python -m venv antenv
           source antenv/bin/activate
-          python -m pip install --upgrade pip setuptools wheel
+          # Upgrade and pin stable build tools for reproducibility
+          python -m pip install --upgrade pip==24.2 setuptools==75.1.0 wheel==0.44.0
+          # Upgrade cffi before installing other dependencies to avoid legacy MutableMapping errors
           pip install --upgrade cffi
+          # Install project dependencies using the modern PEP 517 build system
           pip install -r requirements.txt --use-pep517
+
                 
       # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
       - name: Upload artifact for deployment jobs
@@ -67,4 +71,5 @@ jobs:
           slot-name: 'Production'
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_81F5272BFB954D13B5DDD1E15D434405 }}
+
 
