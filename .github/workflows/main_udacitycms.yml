@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'udacitycms'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C4D7B854867F469A94E970F859DC32F4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_993121069AC64626B403791BF9A566E0 }}
