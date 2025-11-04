@@ -26,6 +26,17 @@ jobs:
 
       # 🛠️ Local Build Section (Optional)
       # The following section in your workflow is designed to catch build issues early on the client side, before deployment. This can be helpful for debugging and validation. However, if this step significantly increases deployment time and early detection is not critical for your workflow, you may remove this section to streamline the deployment process.
+      - name: Debug which requirements file is used
+        run: |
+             echo "=== Listing all requirements.txt files in repo ==="
+             find . -name "requirements.txt"
+             echo "=== Showing contents of each ==="
+             for f in $(find . -name "requirements.txt"); do
+               echo "--- $f ---"
+               cat "$f"
+               echo
+             done
+
       - name: Create and Start virtual environment and Install dependencies
         run: |
             # Clean old venv and pip cache to prevent legacy packages being used
@@ -78,6 +89,7 @@ jobs:
           slot-name: 'Production'
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_81F5272BFB954D13B5DDD1E15D434405 }}
+
 
 
 
