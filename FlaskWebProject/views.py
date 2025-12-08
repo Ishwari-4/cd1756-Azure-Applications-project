@@ -82,7 +82,7 @@ def login():
 
         # --- SUCCESS LOGIN ---
         login_user(user, remember=form.remember_me.data)
-        app.logger.info(f"SUCCESS LOGIN: username={username}, ip={request.remote_addr}")
+        app.logger.warning(f"SUCCESS LOGIN: username={username}, ip={request.remote_addr}")
 
         next_page = request.args.get('next')
         if not next_page or urlparse(next_page).netloc != '':
