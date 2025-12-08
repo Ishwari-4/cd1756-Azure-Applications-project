@@ -1,7 +1,7 @@
 """
 Routes and views for the flask application.
 """
-
+from FlaskWebProject import app
 from datetime import datetime
 from flask import render_template, flash, redirect, request, session, url_for
 from urllib.parse import urlparse
@@ -61,21 +61,39 @@ def post(id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # If user already logged in → send to home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
+
     form = LoginForm()
+
+    # LOGIN FORM SUBMISSION
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
+        username = form.username.data
+        password = form.password.data
+
+        user = User.query.filter_by(username=username).first()
+
+        # --- FAILED LOGIN (WRONG USER OR PASSWORD) ---
+        if user is None or not user.check_password(password):
+            app.logger.warning(f"FAILED LOGIN ATTEMPT: username={username}, ip={request.remote_addr}")
             flash('Invalid username or password')
             return redirect(url_for('login'))
+
+        # --- SUCCESS LOGIN ---
         login_user(user, remember=form.remember_me.data)
+        app.logger.info(f"SUCCESS LOGIN: username={username}, ip={request.remote_addr}")
+
         next_page = request.args.get('next')
         if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('home')
+
         return redirect(next_page)
+
+    # INITIAL PAGE LOAD (GET request)
     session["state"] = str(uuid.uuid4())
     auth_url = _build_auth_url(scopes=Config.SCOPE, state=session["state"])
+
     return render_template('login.html', title='Sign In', form=form, auth_url=auth_url)
 
 @app.route(Config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
