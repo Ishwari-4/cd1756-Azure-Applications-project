@@ -1,7 +1,7 @@
 """
 Routes and views for the flask application.
 """
-
+import logging
 from datetime import datetime
 from flask import render_template, flash, redirect, request, session, url_for
 from urllib.parse import urlparse
@@ -67,9 +67,11 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
+            logging.info(f"Login FAILED for username: {form.username.data} from IP: {request.remote_addr}")
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        logging.info(f"Login SUCCESS for username: {form.username.data} from IP: {request.remote_addr}")
         next_page = request.args.get('next')
         if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('home')
