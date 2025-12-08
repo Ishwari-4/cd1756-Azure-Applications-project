@@ -26,6 +26,9 @@ cachelib>=0.13.0
 
 # Build tools (keep recent versions)
 pip>=24.2
+
+applicationinsights
+
 setuptools>=75.1.0
 wheel>=0.44.0
 cffi>=1.16.0
