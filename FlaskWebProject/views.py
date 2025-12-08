@@ -1,8 +1,7 @@
 """
 Routes and views for the flask application.
 """
-import logging
-logging.basicConfig(level=logging.INFO)
+
 from datetime import datetime
 from flask import render_template, flash, redirect, request, session, url_for
 from urllib.parse import urlparse
@@ -14,10 +13,6 @@ from flask_login import current_user, login_user, logout_user, login_required
 from FlaskWebProject.models import User, Post
 import msal
 import uuid
-from applicationinsights import TelemetryClient
-
-# Initialize with your Application Insights Instrumentation Key
-tc = TelemetryClient("<YOUR_INSTRUMENTATION_KEY>")
 
 imageSourceUrl = 'https://'+ app.config['BLOB_ACCOUNT']  + '.blob.core.windows.net/' + app.config['BLOB_CONTAINER']  + '/'
 
@@ -72,34 +67,16 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            # Track failed login attempt
-            tc.track_event(
-                "LoginFailed",
-                {"username": form.username.data, "ip": request.remote_addr}
-            )
-            tc.flush()  # make sure it sends immediately
-
             flash('Invalid username or password')
             return redirect(url_for('login'))
-
         login_user(user, remember=form.remember_me.data)
-
-        # Track successful login attempt
-        tc.track_event(
-            "LoginSuccess",
-            {"username": form.username.data, "ip": request.remote_addr}
-        )
-        tc.flush()
-
         next_page = request.args.get('next')
         if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('home')
         return redirect(next_page)
-
     session["state"] = str(uuid.uuid4())
     auth_url = _build_auth_url(scopes=Config.SCOPE, state=session["state"])
     return render_template('login.html', title='Sign In', form=form, auth_url=auth_url)
-
 
 @app.route(Config.REDIRECT_PATH)  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized():
