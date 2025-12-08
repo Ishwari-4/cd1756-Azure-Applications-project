@@ -27,7 +27,7 @@ cachelib>=0.13.0
 # Build tools (keep recent versions)
 pip>=24.2
 
-applicationinsights
+
 
 
 
