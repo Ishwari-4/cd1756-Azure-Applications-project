@@ -28,7 +28,7 @@ cachelib>=0.13.0
 pip>=24.2
 
 applicationinsights
-pip install --no-cache-dir -r requirements.txt -v
+
 
 
 setuptools>=75.1.0
